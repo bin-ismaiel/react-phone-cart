@@ -1,52 +1,9 @@
 import { useReducer } from "react";
 import cartItems from "./data";
 
-// function removeItem() {
-//   setCart((prev) => {
-//     let newCart =
-//     return newCart;
-//   });
-//   setTotal((prev) => {
-//     return prev - price * amount;
-//   });
-//   setTotalAmount((prev) => {
-//     return prev - amount;
-//   });
-// }
-
-// function increase() {
-//   setCart((prev) => {
-//     let target = prev.find((item) => {
-//       return item.title === title;
-//     });
-//     target.amount = amount + 1;
-//     return [...prev];
-//   });
-//   setTotal((prev) => {
-//     return prev + price;
-//   });
-//   setTotalAmount((prev) => {
-//     return prev + 1;
-//   });
-// }
-
-// function decrease() {
-//   setCart((prev) => {
-//     let target = prev.find((item) => {
-//       return item.title === title;
-//     });
-//     target.amount = amount - 1;
-//     return [...prev];
-//   });
-//   setTotal((prev) => {
-//     return prev - price;
-//   });
-//   setTotalAmount((prev) => {
-//     return prev - 1;
-//   });
-// }
 function reducer(state, action) {
   const { cart, total, amount } = state;
+
   switch (action.type) {
     case "CLEAR":
       console.log("cleared");
@@ -80,8 +37,19 @@ function reducer(state, action) {
         cart: cart.filter((item) => item.id !== action.payload),
       };
 
+    case "GET_TOTALS":
+      const { total, amount } = cart.reduce(
+        (cartTotal, cartItem) => {
+          const { price, amount } = cartItem;
+          cartTotal.amount += amount;
+          cartTotal.total += amount * price;
+          return cartTotal;
+        },
+        { total: 0, amount: 0 }
+      );
+      return { ...state, total, amount };
+
     default:
-      console.log("error");
       return state;
   }
 }
