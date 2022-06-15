@@ -7,32 +7,54 @@ import reducer from "./reducer";
 const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
-  const [cart, setCart] = useState(cartItems);
-
-  const [total, setTotal] = useState(() => {
+  const startingTotal = () => {
     let total = 0;
-    cart.map((item) => {
+    cartItems.map((item) => {
       total += item.price * item.amount;
     });
     return total;
-  });
-  const [totalAmount, setTotalAmount] = useState(() => {
+  };
+  const startingAmount = () => {
     let total = 0;
-    cart.map((item) => {
+    cartItems.map((item) => {
       total += item.amount;
     });
     return total;
-  });
+  };
 
+  const initialState = {
+    cart: cartItems,
+    total: startingTotal(),
+    amount: startingAmount(),
+    loading: false,
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  // const [cart, setCart] = useState(cartItems);
+
+  // const [total, setTotal] = useState();
+  // const [totalAmount, setTotalAmount] = useState();
+
+  function clearCart() {
+    dispatch({ type: "CLEAR" });
+  }
+  function remove(id) {
+    dispatch({ type: "REMOVE", payload: id });
+  }
+  function increase(id) {
+    dispatch({ type: "INCREASE", payload: id });
+  }
+  function decrease(id) {
+    dispatch({ type: "DECREASE", payload: id });
+  }
   return (
     <AppContext.Provider
       value={{
-        cart,
-        setCart,
-        total,
-        setTotal,
-        totalAmount,
-        setTotalAmount,
+        ...state,
+        clearCart,
+        remove,
+        increase,
+        decrease,
       }}
     >
       {children}
